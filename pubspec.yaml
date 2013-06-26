@@ -1,0 +1,6 @@
+name:  wv4dart
+description:  A sample application
+
+dependencies:
+  fixnum:
+    git: https://github.com/kevmoo/dart-repo/tree/master/lib/fixnum
