@@ -15,7 +15,7 @@ class RandomAccessWavPackFile extends StreamedFile {
   }
   
   int read(List<num> buffer, int offset, int length) {
-    return _file.readListSync(buffer, offset, length);
+	return _file.readIntoSync(buffer, offset, offset+length);
   }
 }
 
@@ -60,7 +60,9 @@ void main() {
   dataChunkHeader.ckID = "data";
   dataChunkHeader.ckSize = total_samples * num_channels * bps;
   
-  RandomAccessFile output = new File("output.wav").openSync(FileMode.WRITE);
+  File outputf = new File("output.wav");
+  RandomAccessFile output = outputf.openSync(mode: FileMode.WRITE);
+
   output.writeString(myRiffChunkHeader.ckID);
   output.writeByte(myRiffChunkHeader.ckSize);
   output.writeByte(myRiffChunkHeader.ckSize >> 8);
@@ -118,7 +120,7 @@ void main() {
       samples_unpacked = samples_unpacked * num_channels;
 
       pcm_buffer = format_samples(bps, temp_buffer, samples_unpacked);
-      output.writeList(pcm_buffer, 0, samples_unpacked * bps);
+	  output.writeFromSync(pcm_buffer , 0 , samples_unpacked * bps);
     }
 
     if (samples_unpacked == 0)
