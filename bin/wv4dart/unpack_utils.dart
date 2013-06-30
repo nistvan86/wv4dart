@@ -141,6 +141,7 @@ class UnpackUtils {
         int counter = 0;
         int dpp_idx;
         int myiterator = 0;
+		int signedCalc = 0;
 
         if ((wps.wphdr.flags & (Defines.MONO_FLAG | Defines.FALSE_STEREO)) == 0)
             termcnt = termcnt ~/ 2;
@@ -158,7 +159,15 @@ class UnpackUtils {
         while (termcnt > 0)
         {
             dpp_idx = myiterator - 1;
-            dpp.weight_A = WordsUtils.restore_weight( byteptr[counter]);
+			
+			// byteptr[counter] is a signed value
+			signedCalc = byteptr[counter];
+			if((signedCalc & 0x80) == 0x80)
+			{
+				signedCalc = (signedCalc & 0x7F) - 0x80;
+			}
+			
+            dpp.weight_A = WordsUtils.restore_weight( signedCalc );
 
             wps.decorr_passes[dpp_idx].weight_A = dpp.weight_A;
 
@@ -166,7 +175,14 @@ class UnpackUtils {
 
             if ((wps.wphdr.flags & (Defines.MONO_FLAG | Defines.FALSE_STEREO)) == 0)
             {
-                dpp.weight_B = WordsUtils.restore_weight( byteptr[counter]);
+				// byteptr[counter] is a signed value
+				signedCalc = byteptr[counter];
+				if((signedCalc & 0x80) == 0x80)
+				{
+					signedCalc = (signedCalc & 0x7F) - 0x80;
+				}
+				
+                dpp.weight_B = WordsUtils.restore_weight( signedCalc );
                 counter++;
             }
             wps.decorr_passes[dpp_idx].weight_B = dpp.weight_B;
@@ -196,6 +212,8 @@ class UnpackUtils {
         int dpp_index = 0;
         int uns_buf0, uns_buf1, uns_buf2, uns_buf3;
         int sample_counter = 0;
+		int signedCalc1 = 0;
+		int signedCalc2 = 0;		
 
         dpp_index = 0;
 
@@ -232,9 +250,27 @@ class UnpackUtils {
                 uns_buf1 = (byteptr[counter + 1] & 0xff);
                 uns_buf2 = (byteptr[counter + 2] & 0xff);
                 uns_buf3 = (byteptr[counter + 3] & 0xff);
+				
+				// We need to convert to 16-bit signed values
+				// 0x8000 represents the left most bit in a 16-bit value
+				// 0x7fff masks all bits except the leftmost in 16 bits
+            
+				signedCalc1 = uns_buf0 + (uns_buf1 << 8);
+				if ((signedCalc1 & 0x8000) == 0x8000)
+				{
+					signedCalc1 = signedCalc1 & 0x7FFF;
+					signedCalc1 = signedCalc1 - 0x8000;
+				}
 
-                dpp.samples_A[0] = WordsUtils.exp2s((uns_buf0 + (uns_buf1 << 8)));
-                dpp.samples_A[1] = WordsUtils.exp2s((uns_buf2 + (uns_buf3 << 8)));
+				signedCalc2 = uns_buf2 + (uns_buf3 << 8);
+				if ((signedCalc2 & 0x8000) == 0x8000)
+				{
+					signedCalc2 = signedCalc2 & 0x7FFF;
+					signedCalc2 = signedCalc2 - 0x8000;
+				}				
+
+                dpp.samples_A[0] = WordsUtils.exp2s(signedCalc1);
+                dpp.samples_A[1] = WordsUtils.exp2s(signedCalc2);
                 counter += 4;
 
                 if ((wps.wphdr.flags & (Defines.MONO_FLAG | Defines.FALSE_STEREO)) == 0)
@@ -244,9 +280,23 @@ class UnpackUtils {
                     uns_buf1 = (byteptr[counter + 1] & 0xff);
                     uns_buf2 = (byteptr[counter + 2] & 0xff);
                     uns_buf3 = (byteptr[counter + 3] & 0xff);
+					
+					signedCalc1 = uns_buf0 + (uns_buf1 << 8);
+					if ((signedCalc1 & 0x8000) == 0x8000)
+					{
+						signedCalc1 = signedCalc1 & 0x7FFF;
+						signedCalc1 = signedCalc1 - 0x8000;
+					}
 
-                    dpp.samples_B[0] = WordsUtils.exp2s((uns_buf0 + (uns_buf1 << 8)));
-                    dpp.samples_B[1] = WordsUtils.exp2s((uns_buf2 + (uns_buf3 << 8)));
+					signedCalc2 = uns_buf2 + (uns_buf3 << 8);
+					if ((signedCalc2 & 0x8000) == 0x8000)
+					{
+						signedCalc2 = signedCalc2 & 0x7FFF;
+						signedCalc2 = signedCalc2 - 0x8000;
+					}
+
+                    dpp.samples_B[0] = WordsUtils.exp2s(signedCalc1);
+                    dpp.samples_B[1] = WordsUtils.exp2s(signedCalc2);
                     counter += 4;
                 }
             }
@@ -257,9 +307,23 @@ class UnpackUtils {
                 uns_buf1 = (byteptr[counter + 1] & 0xff);
                 uns_buf2 = (byteptr[counter + 2] & 0xff);
                 uns_buf3 = (byteptr[counter + 3] & 0xff);
+				
+				signedCalc1 = uns_buf0 + (uns_buf1 << 8);
+				if ((signedCalc1 & 0x8000) == 0x8000)
+				{
+					signedCalc1 = signedCalc1 & 0x7FFF;
+					signedCalc1 = signedCalc1 - 0x8000;
+				}
 
-                dpp.samples_A[0] = WordsUtils.exp2s((uns_buf0 + (uns_buf1 << 8)));
-                dpp.samples_B[0] = WordsUtils.exp2s((uns_buf2 + (uns_buf3 << 8)));
+				signedCalc2 = uns_buf2 + (uns_buf3 << 8);
+				if ((signedCalc2 & 0x8000) == 0x8000)
+				{
+					signedCalc2 = signedCalc2 & 0x7FFF;
+					signedCalc2 = signedCalc2 - 0x8000;
+				}					
+
+                dpp.samples_A[0] = WordsUtils.exp2s(signedCalc1);
+                dpp.samples_B[0] = WordsUtils.exp2s(signedCalc2);
 
                 counter += 4;
             }
