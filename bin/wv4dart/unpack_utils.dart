@@ -495,6 +495,7 @@ class UnpackUtils {
         int tcount;
         int buffer_counter = 0;
         List<int> temp_buffer = new List<int>.filled(Defines.SAMPLE_BUFFER_SIZE, 0);
+		int crcstep = 0;
 
         int samples_processed = 0;
 
@@ -563,7 +564,14 @@ class UnpackUtils {
                     i = q;
                     break;
                 }
-                crc = crc * 3 + buffer[q];
+				
+                crcstep = ((crc * 3) & 0xffffffff);
+                crc = ((crcstep + buffer[q]) & 0xffffffff);
+
+                if((crc & 0x80000000) == 0x80000000)
+                {
+                    crc = (crc & 0x7FFFFFFF) - 0x80000000;
+                }
             }
         }
 
@@ -627,8 +635,16 @@ class UnpackUtils {
                         i = buffer_counter ~/ 2;
                         break;
                     }
-
-                    crc = (crc * 3 + buffer[buffer_counter]) * 3 + buffer[buffer_counter + 1];
+					
+					crcstep = ((crc * 3) & 0xffffffff);
+                    crcstep = ((crcstep + buffer[buffer_counter]) & 0xffffffff);
+                    crcstep = ((crcstep * 3) & 0xffffffff);
+                    crc = ((crcstep + buffer[buffer_counter + 1] ) & 0xffffffff);
+					
+					if((crc & 0x80000000) == 0x80000000)
+                    {
+                        crc = (crc & 0x7FFFFFFF) - 0x80000000;
+                    }					
                 }
             }
             else
