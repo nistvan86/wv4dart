@@ -248,7 +248,8 @@ class WavPackUtils
                 bytes_returned = (samples_to_unpack * num_channels);
 
             //System.arraycopy(temp_buffer, 0, buffer, buf_idx, bytes_returned);
-            buffer.setRange(0, bytes_returned, temp_buffer, buf_idx);
+
+            buffer.setRange(buf_idx, buf_idx+bytes_returned, temp_buffer, 0);
 
             buf_idx += bytes_returned;
 
@@ -496,7 +497,7 @@ class WavPackUtils
                 bleft--;
             }
 
-            while (bleft > 0 && buffer[counter] != 'w')
+            while (bleft > 0 && buffer[counter] != 119)	// 119 is letter 'w'
             {
                 counter++;
                 bleft--;

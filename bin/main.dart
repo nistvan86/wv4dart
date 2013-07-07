@@ -33,11 +33,11 @@ void main() {
 
   int num_channels = WavPackUtils.WavpackGetReducedChannels(context);
 
-  print("The wavpack file has ${num_channels} channels");
+  print("The WavPack file has ${num_channels} channels");
   int total_samples = WavPackUtils.WavpackGetNumSamples(context);
-  print("The wavpack file has ${total_samples} samples");
+  print("The WavPack file has ${total_samples} samples");
   int bps = WavPackUtils.WavpackGetBytesPerSample(context);
-  print("The wavpack file has ${bps} bytes per sample");
+  print("The WavPack file has ${bps} bytes per sample");
   
   RiffChunkHeader myRiffChunkHeader = new RiffChunkHeader();
   myRiffChunkHeader.ckID = "RIFF";
@@ -128,6 +128,10 @@ void main() {
 
   } // end of while
   
+  if (WavPackUtils.WavpackGetNumErrors(context) > 0) {
+    print("CRC errors detected");
+  }
+ 
   output.closeSync();
   input.closeSync();
   
