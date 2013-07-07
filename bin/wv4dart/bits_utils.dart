@@ -65,7 +65,7 @@ class BitsUtils
         if (bs.bc > 32)
         {
             bs.bc -= (nbits);
-            bs.sr = (bs.ptr) >> (8 - bs.bc);
+            bs.sr = (bs.buf[bs.buf_index] & 0xff) >> (8 - bs.bc);
         }
         else
         {

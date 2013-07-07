@@ -497,7 +497,7 @@ class WavPackUtils
                 bleft--;
             }
 
-            while (bleft > 0 && buffer[counter] != 'w')
+            while (bleft > 0 && buffer[counter] != 119)	// 119 is letter 'w'
             {
                 counter++;
                 bleft--;
