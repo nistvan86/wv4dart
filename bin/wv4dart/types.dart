@@ -26,7 +26,7 @@ class Bitstream {
     int error = 0, bc = 0;
     StreamedFile file;
     int bitval = 0;
-    List<int> buf = new List<int>(1024);  // byte[1024] originally
+    List<int> buf = new List<int>(Defines.BITSTREAM_BUFFER_SIZE);  // byte[1024] originally
     int buf_index = 0;
 }
 
@@ -51,6 +51,8 @@ class Defines
     // per call to WavPackUtils.WavpackUnpackSamples
 
     static const int SAMPLE_BUFFER_SIZE = 256;
+    
+    static const int BITSTREAM_BUFFER_SIZE = 1024;        // size of buffer in Bitstream
 
     static const int FALSE = 0;
     static const int TRUE = 1;
