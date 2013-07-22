@@ -225,12 +225,14 @@ class WavPackUtils
                 else
                     samples_to_unpack *= num_channels;
 
+                bcounter = buf_idx;
                 while (samples_to_unpack > 0)
                 {
-                    temp_buffer[bcounter] = 0;
+                    buffer[bcounter] = 0;
                     bcounter++;
                     samples_to_unpack--;
                 }
+                buf_idx = bcounter;
 
                 continue;
             }
@@ -497,7 +499,7 @@ class WavPackUtils
                 bleft--;
             }
 
-            while (bleft > 0 && buffer[counter] != 119)	// 119 is letter 'w'
+            while (bleft > 0 && buffer[counter] != 119)    // 119 is letter 'w'
             {
                 counter++;
                 bleft--;

@@ -110,17 +110,15 @@ class BitsUtils
         {
             int bytes_read, bytes_to_read;
 
-            bytes_to_read = 1024;
+            bytes_to_read = Defines.BITSTREAM_BUFFER_SIZE;
 
             if (bytes_to_read > bs.file_bytes)
                 bytes_to_read = bs.file_bytes;
 
             try
             {
-                List<int> buf = new List<int>(1024);
-                bytes_read = bs.file.read(buf, 0, bytes_to_read);
+                bytes_read = bs.file.read(bs.buf, 0, bytes_to_read);
                 bs.buf_index = 0;
-                bs.buf = buf;
             }
             catch (e)
             {
@@ -136,7 +134,7 @@ class BitsUtils
             }
             else
             {
-                for (int i = 0; i < bs.end - bs.buf_index; i++)
+                for (int i = 0; i < Defines.BITSTREAM_BUFFER_SIZE; i++)
                 {
                     bs.buf[i] = -1;
                 }
@@ -146,11 +144,7 @@ class BitsUtils
         else
         {
             bs.error = 1;
-        }
-
-        if (bs.error > 0)
-        {
-            for (int i = 0; i < bs.end - bs.buf_index; i++)
+			for (int i = 0; i < Defines.BITSTREAM_BUFFER_SIZE; i++)
             {
                 bs.buf[i] = -1;
             }
