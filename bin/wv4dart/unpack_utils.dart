@@ -557,7 +557,7 @@ class UnpackUtils {
 
             for (int q = 0; q < sample_count; q++)
             {
-                bf_abs = (buffer[buffer_counter] < 0 ? -buffer[buffer_counter] : buffer[buffer_counter]);
+                bf_abs = (buffer[q] < 0 ? -buffer[q] : buffer[q]);
 
                 if (bf_abs > mute_limit)
                 {
